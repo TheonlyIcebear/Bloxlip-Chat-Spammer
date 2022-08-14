@@ -8,7 +8,6 @@ class Main:
 	def __init__(self):
 		os.system("")
 		try:
-			# threading.Thread(target=self.Log).start()
 			self.Setup()
 			self.Spam()
 		except Exception as e: 
@@ -118,20 +117,6 @@ class Main:
 		ws.send(f'42/chat,["auth", "{self.auth}"]')
 
 		uiprint("Connected to websocket successfully!", "good")
-		
-
-	def Log(self):
-		uiprint = self.print
-		time.sleep(3)
-		ws = self.ws
-
-		while True:
-			try:
-				print(ws.recv())
-			except Exception as e:
-				pass
-
-		
 
 
 
