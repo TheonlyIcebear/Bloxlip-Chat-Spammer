@@ -9,6 +9,12 @@ Pretty self explanatory really but
 localStorage.getItem('_DO_NOT_SHARE_BLOXFLIP_TOKEN')
 ```
  - wait_time is how long the bot will wait until sending another message
- - Message is the actual message the bot will send
-
-
+ - Message is the actual message the bot will send you can indent by using \n like below
+```
+Line one\n Line Two
+```
+Output:
+```
+Line one
+Line Two
+```
