@@ -50,35 +50,26 @@ class Main:
 
 
 	def Connect(self):
-		return create_connection("wss://sio-bf.blox.land/socket.io/?EIO=3&transport=websocket", header={
-					"Accept-Encoding": "gzip, deflate, br",
-					"Accept-Language": "en-US,en;q=0.9",
-					"Cache-Control": "no-cache",
-					"Connection": "Upgrade",
-					"Host": "sio-bf.blox.land",
-					"Origin": "https://bloxflip.com",
-					"Pragma": "no-cache",
-					"Sec-WebSocket-Extensions": "permessage-deflate; client_max_window_bits",
-					"Sec-WebSocket-Key": "dTCC7XK7OBweEv1kVAUycQ==",
-					"Sec-WebSocket-Version": "13",
-					"Upgrade": "websocket",
-					"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36",
-			})
+		return create_connection("wss://ws.bloxflip.com/socket.io/?EIO=3&transport=websocket", header={
+												"Accept-Encoding": "gzip, deflate, br",
+												"Accept-Language": "en-US,en;q=0.9",
+												"Cache-Control": "no-cache",
+												"Connection": "Upgrade",
+												"Host": "sio-bf.blox.land",
+												"Origin": "https://bloxflip.com",
+												"Pragma": "no-cache",
+												"Sec-WebSocket-Extensions": "permessage-deflate; client_max_window_bits",
+												"Sec-WebSocket-Key": "dTCC7XK7OBweEv1kVAUycQ==",
+												"Sec-WebSocket-Version": "13",
+												"Upgrade": "websocket",
+												"x-auth-token": self.auth,
+												"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36",
+										})
 		
 
 
 	def Setup(self):
 		uiprint = self.print
-		while True:
-			try:
-			 	self.ws = self.Connect()
-			 	break
-			except:
-			 	uiprint("Failed to connect to webserver. Retrying in 1.5 seconds...", "error")
-			 	time.sleep(1.5)
-
-		ws = self.ws
-
 
 		try:
 			open("config.json", "r").close()
@@ -89,10 +80,11 @@ class Main:
 			try:
 				config = json.load(data)
 			except:
-				uiprint("Invalid JSON format", "erorr")
+				uiprint("Invalid JSON format redownload file form github", "erorr")
 
 			try:
-				self.message = config["message"]
+				self.message = config["message"].replace("\\", "\\\\").replace('"', '\\"')
+				print(self.message)
 			except ValueError:
 				uiprint("Invalid message inside JSON file. Must be string number", "error")
 				time.sleep(1.6)
@@ -112,9 +104,33 @@ class Main:
 				time.sleep(1.6)
 				exit()
 
+		while True:
+			try:
+			 	self.ws = self.Connect()
+			 	break
+			except:
+			 	uiprint("Failed to connect to webserver. Retrying in 1.5 seconds...", "error")
+			 	time.sleep(1.5)
+
+		ws = self.ws
+
 
 		ws.send("40/chat,")
+		ws.send(f'42/feed,["auth","{self.auth}"]')
+		ws.send(f'42/crash,["auth","{self.auth}"]')
 		ws.send(f'42/chat,["auth", "{self.auth}"]')
+		ws.send(f'42/wallet,["auth","{self.auth}"]')
+		ws.send(f'42/jackpot,["auth","{self.auth}"]')
+		ws.send(f'42/mode-queue,["auth","{self.auth}"]')
+		ws.send(f'42/marketplace,["auth","{self.auth}"]')
+		ws.send(f'42/cloud-games,["auth","{self.auth}"]')
+		ws.send(f'42/case-battles,["auth","{self.auth}"]')
+		
+		
+		
+		
+
+
 
 		uiprint("Connected to websocket successfully!", "good")
 
@@ -133,7 +149,7 @@ class Main:
 		while True:
 			c += 1
 			try:
-				ws.send(f'42/chat,["send-chat-message", "{message}"]')
+				ws.send(f'42/chat,["send-chat-message","{message}"]')
 				uiprint(f"{c}:Sent message successfully!")
 			except:
 				uiprint("Failed to send message. Reconnecting to websocket.")
